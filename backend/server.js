@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { getUsers } = require("./database");
+const { getUsers, getUserByName, createUser } = require("./utils/database");
 
 const app = express();
 
@@ -29,13 +29,32 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  // Here you would normally check the username and password against a database
-  if (username === "admin" && password === "password") {
-    res.json({ success: true, message: "Login successful!" });
+  const user = await getUserByName(username);
+  if (user) {
+    if (user.password === password) {
+      res.json({ success: true, message: "Login successful!" });
+    } else {
+      res.status(401).json({ success: false, message: "Password incorrect" });
+    }
   } else {
-    res.status(401).json({ success: false, message: "Invalid credentials" });
+    res.status(401).json({ success: false, message: "User not found" });
+  }
+});
+
+app.post("/register", async (req, res) => {
+  const user = req.body;
+  try {
+    const existingUser = await getUserByName(user.name);
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Username already exists" });
+    }
+    await createUser(user);
+    res.json({ success: true, message: "User registered successfully!" });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
 
