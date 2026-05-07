@@ -4,7 +4,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const { MongoStore } = require("connect-mongo");
 const { ObjectId } = require("mongodb")
-const { connectToDB, getUsers, getUserByName, createUser } = require("./utils/database");
+const { connectToDB, getUsers, getUserByName, createUser, sanitizeUser } = require("./utils/database");
 
 require("dotenv").config();
 const app = express();
@@ -155,6 +155,7 @@ app.post("/auth/signin", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "server error" });
+    console.log("Error: ", error)
   }
 });
 

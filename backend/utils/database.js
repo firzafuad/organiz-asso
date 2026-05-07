@@ -69,3 +69,4 @@ exports.getUsers = getUsers;
 exports.getUserByName = getUserByName;
 exports.createUser = createUser;
 exports.closeDBConnection = closeDBConnection;
+exports.sanitizeUser = sanitizeUser
