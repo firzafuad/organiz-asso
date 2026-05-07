@@ -1,13 +1,16 @@
 import { useState } from "react";
 import Login from "../components/login";
 import Signin from "../components/signin";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function AuthPage(props) {
     const [form, setForm] = useState(props.form || "login");
 
+    const navigate = useNavigate();
+
     const onSuccess = (user) => {
       props.onSuccess(user);
+      navigate("/");
     }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

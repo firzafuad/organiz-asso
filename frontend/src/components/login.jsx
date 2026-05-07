@@ -22,6 +22,7 @@ function Login (props) {
 			});
 			
 			alert(response.data.message)
+			props.onSuccess(response.data.user)
 		} catch (error) {
 			console.log("Error during login:", error.response?.data?.error);
 			alert("An error occurred. Please try again.");

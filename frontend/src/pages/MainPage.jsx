@@ -1,7 +1,25 @@
 import logo from '../assets/Logo_SU.png';
 import { Link } from 'react-router-dom';
 
-function MainPage() {
+function MainPage(props) {
+    const user = props.user;
+
+    const connection = () => {
+        if (user === null) {
+            return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
+                <Link to="/login">
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Connexion</button>
+                </Link>
+                <Link to="/signin">
+                    <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Inscription</button>
+                </Link>
+            </div>
+        } else {
+            return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
+            </div>
+        }
+    }
     return (
         <div className="flex font-sans flex-col">
             <header className="flex">
@@ -18,14 +36,7 @@ function MainPage() {
                     </div>
                     </form>
                 </div>
-                <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
-                    <Link to="/login">
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Connexion</button>
-                    </Link>
-                    <Link to="/signin">
-                        <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Inscription</button>
-                    </Link>
-                </div>
+                {connection()}
             </header>
             <main className="flex w-full">
                 <aside className="w-1/5"></aside>
