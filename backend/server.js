@@ -83,7 +83,7 @@ app.get("/auth/me", async (req, res) => {
 
 app.post("/auth/signup", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: "email and password are required" });
@@ -104,6 +104,8 @@ app.post("/auth/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await database.collection("Users").insertOne({
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       createdAt: new Date()
