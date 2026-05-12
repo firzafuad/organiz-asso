@@ -1,8 +1,9 @@
 import logo from '../assets/Logo_SU.png';
+import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
 
 function MainPage(props) {
-    const user = props.user;
+    const user = props.user || null;
 
     const connection = () => {
         if (user === null) {
@@ -16,6 +17,7 @@ function MainPage(props) {
             </div>
         } else {
             return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
+                <Avatar user={{name: "User Haha"}} />
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
             </div>
         }
