@@ -1,9 +1,28 @@
+import { useContext } from 'react';
 import logo from '../assets/Logo_SU.png';
 import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
+import { BACK_URI } from '../utils/constants';
+import axios from 'axios';
 
-function MainPage(props) {
-    const user = props.user || null;
+const api = axios.create({
+  baseURL: BACK_URI,
+  withCredentials: true
+});
+
+function MainPage() {
+    const { user, setUser } = useContext(UserContext);
+
+    async function handleLogout() {
+    try {
+      const response = await api.post("/auth/logout");
+      setUser(null);
+    } catch (error) {
+      alert("Logout failed");
+      console.log(error.response?.data?.error || "Error API Logout")
+    }
+  }
 
     const connection = () => {
         if (user === null) {
@@ -11,14 +30,14 @@ function MainPage(props) {
                 <Link to="/login">
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Connexion</button>
                 </Link>
-                <Link to="/signin">
+                <Link to="/signup">
                     <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Inscription</button>
                 </Link>
             </div>
         } else {
             return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
                 <Avatar user={{name: "User Haha"}} />
-                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogout}>Logout</button>
             </div>
         }
     }

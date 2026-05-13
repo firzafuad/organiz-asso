@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Login from "../components/Login";
-import Signin from "../components/Signup";
+import Signup from "../components/Signup";
 import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 function AuthPage(props) {
     const [form, setForm] = useState(props.form || "login");
+    const { setUser } = useContext(UserContext);
 
     const navigate = useNavigate();
 
     const onSuccess = (user) => {
-      props.onSuccess(user);
+      setUser(user);
       navigate("/");
     }
   return (
@@ -21,7 +23,7 @@ function AuthPage(props) {
           <p className="max-w-md text-wrap text-sm text-gray-500">Bienvenue sur la page d'authentification de Organiz-Asso. Veuillez vous connecter ou créer un compte pour accéder à vos fonctionnalités personnalisées.</p>
       </div>
       
-      {form === "login" ? <Login onSuccess={onSuccess} /> : <Signin onSuccess={onSuccess} />}
+      {form === "login" ? <Login onSuccess={onSuccess} /> : <Signup onSuccess={onSuccess} />}
       <p className="text-sm text-gray-500 mt-4">{form === "login" ? "Pas encore de compte ? " : "Déjà un compte ? "}
         <button className="text-blue-500 hover:underline" onClick={() => setForm(form === "login" ? "signin" : "login")}>
           {form === "login" ? "Inscrivez-vous" : "Connectez-vous"}
