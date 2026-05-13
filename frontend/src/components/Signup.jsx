@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BACK_URI } from '../utils/constants';
 
-function Signin (props) {
+function Signup (props) {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,7 +11,7 @@ function Signin (props) {
   const [passOK, setPassOK] = useState("");
   
   const api = axios.create({
-		baseURL: "http://localhost:8000",
+		baseURL: BACK_URI,
 		withCredentials: true
 	});
 
@@ -50,4 +51,4 @@ function Signin (props) {
    );
 }
 
-export default Signin;
+export default Signup;

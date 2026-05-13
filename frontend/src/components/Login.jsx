@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
+import { BACK_URI } from '../utils/constants';
 
 function Login (props) {
 	const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ function Login (props) {
 	const getPassword = (evt) => {setPassword(evt.target.value)}
 
 	const api = axios.create({
-		baseURL: "http://localhost:8000",
+		baseURL: BACK_URI,
 		withCredentials: true
 	});
 
