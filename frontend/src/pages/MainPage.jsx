@@ -36,7 +36,7 @@ function MainPage() {
             </div>
         } else {
             return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
-                <Avatar user={{name: "User Haha"}} />
+                <Avatar user={user} />
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogout}>Logout</button>
             </div>
         }
@@ -52,8 +52,8 @@ function MainPage() {
                     <input id="requete" placeholder="Rechercher..." className='border-2 border-solid rounded'/>
                     <input className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" id="search_button" />
                     <div id="filtre_div">
-                        <label for="date_deb">Date de début</label><input type="date" id="date_deb" />
-                        <label for="date_fin">Date de fin</label><input type="date" id="date_fin" />
+                        <label htmlFor="date_deb">Date de début</label><input type="date" id="date_deb" />
+                        <label htmlFor="date_fin">Date de fin</label><input type="date" id="date_fin" />
                     </div>
                     </form>
                 </div>
@@ -64,7 +64,7 @@ function MainPage() {
                 <section className="flex w-4/5 flex-col">
                     <div id="new_comment" className="w-full h-24">
                     <form id="new_comment_form">
-                        <label for="text_new_comment">Nouveau message&thinsp;:</label>
+                        <label htmlFor="text_new_comment">Nouveau message&thinsp;:</label>
                         <textarea id="text_new_comment" rows="2" cols="40"></textarea>          
                         <input type="submit" id="new_button" />
                     </form>        
