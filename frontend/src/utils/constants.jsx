@@ -1,0 +1,1 @@
+export const BACK_URI = import.meta.env.BACK_URI || "http://localhost:8000";
