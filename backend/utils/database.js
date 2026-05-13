@@ -17,6 +17,7 @@ async function connectToDB() {
     db = client.db(DB_NAME);
 
     await db.collection("Users").createIndex({ email: 1 }, { unique: true });
+    await db.collection("Users").createIndex({ username: 1 }, { unique: true });
     await db.collection("Messages").createIndex({ userId: 1, createdAt: -1 });
 
     console.log("MongoDB connected");
@@ -36,6 +37,8 @@ async function closeDBConnection() {
 function sanitizeUser(user) {
   return {
     id: user._id.toString(),
+    username: user.username,
+    name: `${user.firstName} ${user.lastName}`,
     email: user.email
   };
 }

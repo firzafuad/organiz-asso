@@ -83,7 +83,7 @@ app.get("/auth/me", async (req, res) => {
 
 app.post("/auth/signup", async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { username, firstName, lastName, email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: "email and password are required" });
@@ -95,15 +95,21 @@ app.post("/auth/signup", async (req, res) => {
 
     const database = await connectToDB();
 
-    const existingUser = await database.collection("Users").findOne({ email });
+    const existingEmail = await database.collection("Users").findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({ error: "email already in use" });
+    }
+
+    const existingUser = await database.collection("Users").findOne({ username });
 
     if (existingUser) {
-      return res.status(409).json({ error: "email already in use" });
+      return res.status(409).json({ error: "username already in use" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await database.collection("Users").insertOne({
+      username,
       firstName,
       lastName,
       email,
@@ -117,6 +123,8 @@ app.post("/auth/signup", async (req, res) => {
       message: "signup successful",
       user: {
         id: result.insertedId.toString(),
+        username,
+        name: `${user.firstName} ${user.lastName}`,
         email
       }
     });
