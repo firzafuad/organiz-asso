@@ -1,10 +1,13 @@
-import { useContext } from 'react';
-import logo from '../assets/Logo_SU.png';
-import Avatar from '../components/Avatar';
+import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
+import Avatar from '../components/Avatar';
+import Message from '../components/Message';
+
+import logo from '../assets/Logo_SU.png';
 import { UserContext } from '../context/UserContext';
 import { BACK_URI } from '../utils/constants';
-import axios from 'axios';
 
 const api = axios.create({
   baseURL: BACK_URI,
@@ -13,6 +16,37 @@ const api = axios.create({
 
 function MainPage() {
     const { user, setUser } = useContext(UserContext);
+    const [ messages, setMessages ] = useState([])
+
+    useEffect(() => {
+        setMessages([
+            {
+                id:1,
+                author: "joko",
+                date: "01-01-2025",
+                text: "salut",
+                replies: [
+                    {
+                        id:2,
+                        author: "joko1",
+                        date: "01-02-2025",
+                        text: "salut"
+                    },
+                    {
+                        id:3,
+                        author: "joko2",
+                        date: "01-03-2025",
+                        text: "ca va"
+                    }
+                ]
+            }, {
+                id:4,
+                author: "siti",
+                date: "02-01-2025",
+                text: "bonjour",
+            }
+        ])
+    }, []);
 
     async function handleLogout() {
     try {
@@ -71,19 +105,7 @@ function MainPage() {
                     </div>
                     <article className="w-full">
                     <ul>
-                        <li>
-                        <p><span>Utilisateur 1</span> -- <time>30/01/2024 à 13:53</time></p>
-                        <blockquote>Ceci est un deuxième message (<button>+</button>)</blockquote>
-                        </li>
-                        <li>
-                        <p><span>Utilisateur 2</span> -- <time>30/01/2024 à 13:51</time></p>
-                        <blockquote>Ceci est un premier message (<button>+</button>)
-                            <div id="msg20240130-135210">
-                            <p><span>Utilisateur 1</span> -- <time>30/01/2024 à 13:52</time></p>
-                        <blockquote>Ceci est une réponse (<button>+</button>)</blockquote>
-                            </div>              
-                        </blockquote>
-                        </li>
+                        {messages.map((msg) => <Message key={msg.id} author={msg.author} date={msg.date} text={msg.text} replies={msg.replies} />)}
                     </ul>
                     </article>
                 </section>  
