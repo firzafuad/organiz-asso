@@ -8,6 +8,7 @@ import Message from '../components/Message';
 import logo from '../assets/Logo_SU.png';
 import { UserContext } from '../context/UserContext';
 import { BACK_URI } from '../utils/constants';
+import NewMessage from '../components/NewMessage';
 
 const api = axios.create({
   baseURL: BACK_URI,
@@ -17,46 +18,31 @@ const api = axios.create({
 function MainPage() {
     const { user, setUser } = useContext(UserContext);
     const [ messages, setMessages ] = useState([])
+    const [ error, setError] = useState("");
 
     useEffect(() => {
-        setMessages([
-            {
-                id:1,
-                author: "joko",
-                date: "01-01-2025",
-                text: "salut",
-                replies: [
-                    {
-                        id:2,
-                        author: "joko1",
-                        date: "01-02-2025",
-                        text: "salut"
-                    },
-                    {
-                        id:3,
-                        author: "joko2",
-                        date: "01-03-2025",
-                        text: "ca va"
-                    }
-                ]
-            }, {
-                id:4,
-                author: "siti",
-                date: "02-01-2025",
-                text: "bonjour",
+        async function fetchMessages() {
+            try {
+                const response = await api.get("/messages");
+                setMessages(response.data.messages);
+            } catch (error) {
+                setError(error.response?.data?.error);
+                setMessages([])
             }
-        ])
+        }
+
+        fetchMessages();
     }, []);
 
     async function handleLogout() {
-    try {
-      const response = await api.post("/auth/logout");
-      setUser(null);
-    } catch (error) {
-      alert("Logout failed");
-      console.log(error.response?.data?.error || "Error API Logout")
+        try {
+        await api.post("/auth/logout");
+        setUser(null);
+        } catch (error) {
+        alert("Logout failed");
+        console.log(error.response?.data?.error || "Error API Logout")
+        }
     }
-  }
 
     const connection = () => {
         if (user === null) {
@@ -75,6 +61,11 @@ function MainPage() {
             </div>
         }
     }
+
+    const addMessage = (msg) => {
+        setMessages([msg, ...messages])
+    }
+
     return (
         <div className="flex font-sans flex-col">
             <header className="flex">
@@ -96,17 +87,16 @@ function MainPage() {
             <main className="flex w-full">
                 <aside className="w-1/5"></aside>
                 <section className="flex w-4/5 flex-col">
-                    <div id="new_comment" className="w-full h-24">
-                    <form id="new_comment_form">
-                        <label htmlFor="text_new_comment">Nouveau message&thinsp;:</label>
-                        <textarea id="text_new_comment" rows="2" cols="40"></textarea>          
-                        <input type="submit" id="new_button" />
-                    </form>        
+                    <div id="new_comment" className="w-full">
+                        <NewMessage onSubmit={addMessage} />
                     </div>
                     <article className="w-full">
-                    <ul>
-                        {messages.map((msg) => <Message key={msg.id} author={msg.author} date={msg.date} text={msg.text} replies={msg.replies} />)}
-                    </ul>
+                        {
+                            error && <p className='text-red-200'>{error}</p> ||
+                            <ul>
+                                {messages.map((msg) => <Message key={msg.id} author={msg.author} date={msg.date} text={msg.text} replies={msg.replies} />)}
+                            </ul>
+                        }
                     </article>
                 </section>  
             </main>
