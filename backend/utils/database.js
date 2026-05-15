@@ -43,6 +43,15 @@ function sanitizeUser(user) {
   };
 }
 
+function sanitizeMessage(msg) {
+  return {
+    id: msg._id.toString(),
+    author: msg.author,
+    text: msg.text,
+    date: msg.createdAt
+  }
+}
+
 async function getUsers() {
   const client = await MongoClient.connect(MONGO_URI);
   const collection = client.db('Forum').collection('Users');
@@ -73,3 +82,4 @@ exports.getUserByName = getUserByName;
 exports.createUser = createUser;
 exports.closeDBConnection = closeDBConnection;
 exports.sanitizeUser = sanitizeUser
+exports.sanitizeMessage = sanitizeMessage

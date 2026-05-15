@@ -4,7 +4,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const { MongoStore } = require("connect-mongo");
 const { ObjectId } = require("mongodb")
-const { connectToDB, getUsers, getUserByName, createUser, sanitizeUser } = require("./utils/database");
+const { connectToDB, getUsers, getUserByName, createUser, sanitizeUser, sanitizeMessage } = require("./utils/database");
 
 require("dotenv").config();
 const app = express();
@@ -193,7 +193,9 @@ app.get("/messages", authMiddleware, async (req, res) => {
       .sort({ createdAt: -1 })
       .toArray();
 
-    res.json(messages);
+    res.json({
+      messages: messages.map((msg) => sanitizeMessage(msg))
+    });
   } catch (error) {
     res.status(500).json({ error: "server error" });
   }
@@ -201,7 +203,7 @@ app.get("/messages", authMiddleware, async (req, res) => {
 
 app.post("/messages", authMiddleware, async (req, res) => {
   try {
-    const { text } = req.body;
+    const { author, text } = req.body;
 
     if (!text || text.trim() === "") {
       return res.status(400).json({ error: "text is required" });
@@ -209,19 +211,20 @@ app.post("/messages", authMiddleware, async (req, res) => {
 
     const database = await connectToDB();
 
-    await database.collection("Messages").insertOne({
+    const result = await database.collection("Messages").insertOne({
       text: text.trim(),
+      author: author,
       userId: req.session.userId,
       createdAt: new Date()
     });
 
-    const messages = await database
+    const message = await database
       .collection("Messages")
-      .find({ userId: req.session.userId })
-      .sort({ createdAt: -1 })
-      .toArray();
+      .findOne({ _id: new ObjectId(result.insertedId) });
 
-    res.status(201).json(messages);
+    res.status(201).json({
+      message: sanitizeMessage(message)
+    });
   } catch (error) {
     res.status(500).json({ error: "server error" });
   }
