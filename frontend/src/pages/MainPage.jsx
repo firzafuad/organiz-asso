@@ -5,7 +5,7 @@ import axios from 'axios';
 import Avatar from '../components/Avatar';
 import Message from '../components/Message';
 import Filters from '../components/Filters';
-
+import SearchBar from '../components/SearchBar';
 import logo from '../assets/Logo_SU.png';
 import { UserContext } from '../context/UserContext';
 import { BACK_URI } from '../utils/constants';
@@ -20,20 +20,22 @@ function MainPage() {
     const { user, setUser } = useContext(UserContext);
     const [ messages, setMessages ] = useState([])
     const [ error, setError] = useState("");
-const [filters, setFilters] = useState({});
+    const [filters, setFilters] = useState({});
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         async function fetchMessages() {
-            try {
-                const response = await api.get("/messages", { params: filters });
-                setMessages(response.data.messages);
-            } catch (error) {
-                setError(error.response?.data?.error);
-                setMessages([]);
-            }
+    try {
+        console.log("params envoyés:", { ...filters, search });
+        const response = await api.get("/messages", { params: { ...filters, search } });
+        setMessages(response.data.messages);
+    } catch (error) {
+        setError(error.response?.data?.error);
+        setMessages([]);
     }
+}
         fetchMessages();
-    }, [filters]);
+    }, [filters, search]);
 
     async function handleLogout() {
         try {
@@ -89,9 +91,8 @@ const [filters, setFilters] = useState({});
                 </div>
                 <div id="search" className="w-1/2 h-24">
                     <form id="search_form">
-                    <input id="requete" placeholder="Rechercher..." className='border-2 border-solid rounded'/>
-                    <input className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" id="search_button" />
-                    <Filters onFilter={handleFilter} />
+                        <SearchBar onChange={(value) => setSearch(value)} />
+                        <Filters onFilter={handleFilter} />
                     </form>
                 </div>
                 {connection()}

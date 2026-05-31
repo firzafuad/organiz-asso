@@ -199,7 +199,14 @@ app.get("/messages", authMiddleware, async (req, res) => {
     } else if (dateFin && dateFin !== "") {
     query.createdAt = { $lte: new Date(dateFin) };
 }
+const { search } = req.query;
 
+if (search && search !== "") {
+    query.$or = [
+        { text: { $regex: search, $options: "i" } },
+        { author: { $regex: search, $options: "i" } }
+    ];
+}
     const allMessages = await database
   .collection("Messages")
   .find(query)
@@ -295,6 +302,42 @@ app.get("/users/:username", async (req, res) => {
     res.status(500).json({ error: "server error" });
     }
 });
+
+
+
+
+app.delete("/messages/:id", authMiddleware, async (req, res) => {
+    try {
+        const database = await connectToDB();
+
+        const message = await database.collection("Messages").findOne({ _id: new ObjectId(req.params.id) });
+
+        if (!message) {
+            return res.status(404).json({ error: "message not found" });
+        }
+
+        if (message.userId !== req.session.userId) {
+            return res.status(403).json({ error: "not authorized" });
+        }
+
+        await database.collection("Messages").deleteOne({ _id: new ObjectId(req.params.id) });
+
+        res.json({ message: "message deleted" });
+    } catch (error) {
+        console.log("Delete error:", error);
+        res.status(500).json({ error: "server error" });
+    }
+});
+
+
+
+
+
+
+
+
+
+
 
 // Start server
 connectToDB()

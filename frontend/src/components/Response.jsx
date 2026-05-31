@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Response(props) {
     const formatDate = (dateString) => {
         const date = new Date(dateString).toLocaleString('fr-FR', {
@@ -17,7 +19,7 @@ function Response(props) {
     return (
         <div>
             <p>
-                <span>{props.response.author}</span> - <time className="opacity-50">{formatDate(props.response.date)}</time>
+                <Link to={"/profile/" + props.response.author}><span>{props.response.author}</span></Link> - <time className="opacity-50">{formatDate(props.response.date)}</time>
             </p>
             <p>{props.response.text}</p>
         </div>
