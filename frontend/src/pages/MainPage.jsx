@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import Avatar from '../components/Avatar';
 import Message from '../components/Message';
+import Filters from '../components/Filters';
 
 import logo from '../assets/Logo_SU.png';
 import { UserContext } from '../context/UserContext';
@@ -19,20 +20,20 @@ function MainPage() {
     const { user, setUser } = useContext(UserContext);
     const [ messages, setMessages ] = useState([])
     const [ error, setError] = useState("");
+const [filters, setFilters] = useState({});
 
     useEffect(() => {
         async function fetchMessages() {
             try {
-                const response = await api.get("/messages");
+                const response = await api.get("/messages", { params: filters });
                 setMessages(response.data.messages);
             } catch (error) {
                 setError(error.response?.data?.error);
-                setMessages([])
+                setMessages([]);
             }
-        }
-
+    }
         fetchMessages();
-    }, []);
+    }, [filters]);
 
     async function handleLogout() {
         try {
@@ -63,8 +64,22 @@ function MainPage() {
     }
 
     const addMessage = (msg) => {
-        setMessages([msg, ...messages])
+    if (msg.parentId) {
+        setMessages(messages.map((m) => m.id === msg.parentId ? { ...m, replies: [...(m.replies || []), msg] } : m));
+    } else {
+        setMessages([msg, ...messages]);
     }
+}
+
+    const handleFilter = (name, value) => {
+    const newFilters = { ...filters };
+    if (value === "") {
+        delete newFilters[name];
+    } else {
+        newFilters[name] = value;
+    }
+    setFilters(newFilters);
+}
 
     return (
         <div className="flex font-sans flex-col">
@@ -76,10 +91,7 @@ function MainPage() {
                     <form id="search_form">
                     <input id="requete" placeholder="Rechercher..." className='border-2 border-solid rounded'/>
                     <input className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" id="search_button" />
-                    <div id="filtre_div">
-                        <label htmlFor="date_deb">Date de début</label><input type="date" id="date_deb" />
-                        <label htmlFor="date_fin">Date de fin</label><input type="date" id="date_fin" />
-                    </div>
+                    <Filters onFilter={handleFilter} />
                     </form>
                 </div>
                 {connection()}
@@ -94,7 +106,7 @@ function MainPage() {
                         {
                             error && <p className='text-red-200'>{error}</p> ||
                             <ul>
-                                {messages.map((msg) => <Message key={msg.id} author={msg.author} date={msg.date} text={msg.text} replies={msg.replies} />)}
+                                {messages.map((msg) => <Message key={msg.id} id={msg.id} author={msg.author} date={msg.date} text={msg.text} replies={msg.replies} onReply={addMessage} />)}
                             </ul>
                         }
                     </article>

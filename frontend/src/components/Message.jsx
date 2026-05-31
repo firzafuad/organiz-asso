@@ -1,4 +1,11 @@
+import { useState } from "react";
+import NewMessage from "./NewMessage";
+import ResponseList from "./ResponseList";
+import { Link } from "react-router-dom";
+
 function Message(props) {
+    const [showReply, setShowReply] = useState(false);
+
     const formatDate = (dateString) => {
         const date = new Date(dateString).toLocaleString('fr-FR', {
             year: 'numeric',
@@ -15,13 +22,21 @@ function Message(props) {
     };
 
     const date = formatDate(props.date);
-    return <div >
-        <p><span>{props.author}</span> - <time className="opacity-50">{date.toLocaleString()}</time></p>
+
+    return( 
+    <div>
+        <p>
+            <Link to={"/profile/" + props.author}><span>{props.author}</span></Link> - <time className="opacity-50">{date}</time>
+        </p>
+
         <p>{props.text}</p>
-        <ul>
-            {props.replies && props.replies.map((rep) => <Message key={rep.id} author={rep.author} date={rep.date} text={rep.text} replies={rep.replies} />)}
-        </ul>
+
+        <button onClick={() => setShowReply(!showReply)}>{showReply ? "Annuler" : "Répondre"}</button>
+
+        {showReply && <NewMessage parentId={props.id} onSubmit={(msg) => { props.onReply(msg); setShowReply(false); }} />}
+        {props.replies && props.replies.length > 0 && (<ResponseList responses={props.replies} />)}
     </div>
+    );
 }
 
 export default Message;

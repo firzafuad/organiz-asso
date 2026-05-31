@@ -19,7 +19,8 @@ function NewMessage(props) {
         try {
             const response = await api.post("/messages", {
                 author: user.username,
-                text
+                text,
+                parentId: props.parentId || null
             });
             props.onSubmit(response.data.message);
         } catch (error) {

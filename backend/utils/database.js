@@ -44,12 +44,14 @@ function sanitizeUser(user) {
 }
 
 function sanitizeMessage(msg) {
-  return {
-    id: msg._id.toString(),
-    author: msg.author,
-    text: msg.text,
-    date: msg.createdAt
-  }
+    return {
+        id: msg._id.toString(),
+        author: msg.author,
+        text: msg.text,
+        date: msg.createdAt,
+        parentId: msg.parentId || null,
+        replies: msg.replies ? msg.replies.map((rep) => sanitizeMessage(rep)) : []
+    }
 }
 
 async function getUsers() {

@@ -124,11 +124,12 @@ app.post("/auth/signup", async (req, res) => {
       user: {
         id: result.insertedId.toString(),
         username,
-        name: `${user.firstName} ${user.lastName}`,
+        name: `${firstName} ${lastName}`,
         email
       }
     });
   } catch (error) {
+    console.log("Signup error:", error);
     res.status(500).json({ error: "server error" });
   }
 });
@@ -187,23 +188,56 @@ app.get("/messages", authMiddleware, async (req, res) => {
   try {
     const database = await connectToDB();
 
-    const messages = await database
-      .collection("Messages")
-      .find({ userId: req.session.userId })
-      .sort({ createdAt: -1 })
-      .toArray();
+    const { dateDebut, dateFin } = req.query;
 
-    res.json({
-      messages: messages.map((msg) => sanitizeMessage(msg))
-    });
+    let query = {};
+
+    if (dateDebut && dateDebut !== "" && dateFin && dateFin !== "") {
+    query.createdAt = { $gte: new Date(dateDebut), $lte: new Date(dateFin) };
+    } else if (dateDebut && dateDebut !== "") {
+        query.createdAt = { $gte: new Date(dateDebut) };
+    } else if (dateFin && dateFin !== "") {
+    query.createdAt = { $lte: new Date(dateFin) };
+}
+
+    const allMessages = await database
+  .collection("Messages")
+  .find(query)
+  .sort({ createdAt: -1 })
+  .toArray();
+
+const messages = [];
+const replies = [];
+
+for (let i = 0; i < allMessages.length; i++) {
+    if (allMessages[i].parentId) {
+        replies.push(allMessages[i]);
+    } else {
+        messages.push(allMessages[i]);
+    }
+}
+
+for (let i = 0; i < messages.length; i++) {
+    messages[i].replies = [];
+    for (let j = 0; j < replies.length; j++) {
+        if (replies[j].parentId === messages[i]._id.toString()) {
+            messages[i].replies.push(replies[j]);
+        }
+    }
+}
+
+res.json({
+    messages: messages.map((msg) => sanitizeMessage(msg))
+});
   } catch (error) {
+    console.log("Messages error:", error);
     res.status(500).json({ error: "server error" });
   }
 });
 
 app.post("/messages", authMiddleware, async (req, res) => {
   try {
-    const { author, text } = req.body;
+    const { author, text , parentId} = req.body;
 
     if (!text || text.trim() === "") {
       return res.status(400).json({ error: "text is required" });
@@ -215,6 +249,7 @@ app.post("/messages", authMiddleware, async (req, res) => {
       text: text.trim(),
       author: author,
       userId: req.session.userId,
+      parentId: parentId || null,
       createdAt: new Date()
     });
 
@@ -239,7 +274,27 @@ app.get("/users", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+app.get("/users/:username", async (req, res) => {
+    try {
+        const database = await connectToDB();
 
+        const user = await database.collection("Users").findOne({ username: req.params.username });
+
+        if (!user) {
+            return res.status(404).json({ error: "user not found" });
+        }
+
+        const messages = await database.collection("Messages").find({ author: req.params.username }).sort({ createdAt: -1 }).toArray();
+
+        res.json({
+            user: sanitizeUser(user),
+            messages: messages.map((msg) => sanitizeMessage(msg))
+        });
+    } catch (error) {
+    console.log("Profile error:", error);
+    res.status(500).json({ error: "server error" });
+    }
+});
 
 // Start server
 connectToDB()
