@@ -16,6 +16,7 @@ function NewMessage(props) {
             const response = await api.post("/messages", {
                 author: user.username,
                 text,
+                category: props.category,
                 parentId: props.parentId || null
             });
             props.onSubmit(response.data.message);
