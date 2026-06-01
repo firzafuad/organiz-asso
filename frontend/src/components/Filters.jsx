@@ -1,3 +1,5 @@
+import "../styles/Filters.css";
+
 function Filters(props) {
     return <div id="filtre_div">
         <label htmlFor="date_deb">Date de début</label>

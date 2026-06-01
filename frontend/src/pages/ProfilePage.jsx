@@ -19,7 +19,6 @@ function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
 
     
-    const isOwner = user && user.username === username;
     useEffect(() => {
         async function fetchProfile() {
             try {
@@ -56,7 +55,6 @@ function ProfilePage() {
         <ProfileCard 
             user={profileData.user}
             messages={profileData.messages}
-            isOwner={isOwner}
             onDelete={handleDelete}
         />
     </div>

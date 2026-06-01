@@ -1,0 +1,59 @@
+.message-card {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.message-card button {
+  margin-top: 10px;
+}
+
+.message-card form {
+  margin-top: 10px;
+}
+
+/* Auteur + date */
+.message-author {
+  font-weight: bold;
+  color: #2c3e50;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Date */
+.message-author time {
+  font-weight: normal;
+  font-size: 0.85rem;
+  color: gray;
+}
+
+/* Texte du message */
+.message-content {
+  margin-top: 6px;
+  color: #444;
+}
+
+/* Bouton */
+.message-button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: none;
+  background: #2c3e50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.message-button:hover {
+  background: #1a242f;
+}
+
+/* Réponses */
+.response-list {
+  margin-top: 10px;
+  padding-left: 10px;
+  border-left: 2px solid #ddd;
+}

@@ -1,0 +1,27 @@
+/* Conteneur (le div parent du input) */
+div {
+  margin-bottom: 15px;
+}
+
+input[type="text"] {
+  margin-top: 15px;
+  width: 100%;
+}
+
+/* Input de recherche */
+div input {
+  width: 100%;
+  padding: 8px 10px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* Focus sur le champ */
+div input:focus {
+  outline: none;
+  border-color: #2c3e50;
+}

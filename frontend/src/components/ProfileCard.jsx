@@ -1,17 +1,19 @@
+import "../styles/ProfileCard.css";
+
 function ProfileCard(props) {
     return (
-        <div>
+        <div className="profile-card">
             <h2>{props.user.name}</h2>
-            <p>@{props.user.username}</p>
-            <p>{props.user.email}</p>
+            <p>users:{props.user.username}</p>
+            <p>EMAIL:{props.user.email}</p>
             <h3>Messages publiés</h3>
             <ul>
                 {props.messages && props.messages.map((msg) => (
                     <li key={msg.id}>
                         <p>{msg.text}</p>
-                        {props.isOwner === true && (
-                            <button onClick={() => props.onDelete(msg.id)}>Supprimer</button>
-                        )}
+                        <button onClick={() => props.onDelete(msg.id)}>
+                            Supprimer
+                        </button>
                     </li>
                 ))}
             </ul>

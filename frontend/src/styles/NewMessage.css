@@ -1,0 +1,49 @@
+/* Formulaire nouveau message */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: #d7f8f3;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  margin-top: 75px;
+}
+
+/* Label */
+.grid label {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+/* Textarea */
+.grid textarea {
+  resize: none;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: inherit;
+}
+
+/* Bouton */
+.grid button {
+  background: #2c3e50;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.grid button:hover {
+  background: #1a242f;
+}
+
+/* Message erreur */
+.grid p {
+  color: red;
+  font-size: 0.9rem;
+}

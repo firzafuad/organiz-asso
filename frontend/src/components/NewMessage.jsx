@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from 'axios';
 import { UserContext } from "../context/UserContext";
 import { BACK_URI } from "../utils/constants";
+import "../styles/NewMessage.css";
 
 const api = axios.create({
     baseURL: BACK_URI,
