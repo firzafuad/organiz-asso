@@ -57,9 +57,9 @@ function AdminPage() {
     return (
         <div className="flex font-sans flex-col">
             <header className="flex">
-                <div id="logo" className="w-1/4 h-24">
+                <Link to="/" id="logo" className="w-1/4 h-24">
                     <img src={logo} className='h-20' alt="Logo de l'association" id="logo_image" />
-                </div>
+                </Link>
                 <div id="search" className="w-1/2 h-24"></div>
                 <div id="connect" className="w-1/4 h-24 flex items-end justify-end gap-4">
                     <Avatar user={user} />
