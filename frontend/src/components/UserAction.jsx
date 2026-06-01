@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom";
 import { api } from "../utils/constants";
 
-function UserAction({ user, className, onDelete }) {
+function UserAction({ user, className, onDelete, onUpdate }) {
     const [ status, setStatus ] = useState(user.role);
     const [ error, setError ] = useState("")
 
@@ -19,22 +19,28 @@ function UserAction({ user, className, onDelete }) {
     }
 
     async function handleAction() {
+        if (status === user.role) return ;
         if (status === "delete") {
             try {
                 api.delete(`/users/${user.username}`);
                 onDelete(user);
             } catch (error) {
                 setError(error.response?.data?.error);
+                setTimeout(() => {
+                    setError(null)
+                }, 3000);
             }
         } else {
-            user.role = status;
             try {
-                api.post("/users/", {
-                    username: user.username,
-                    role: status
+                await api.post(`/users/${user.username}`, null, {
+                    params: {role: status}
                 })
+                onUpdate(user);
             } catch (error) {
                 setError(error.response?.data?.error);
+                setTimeout(() => {
+                    setError(null)
+                }, 3000);
             }
         }
     }
@@ -44,22 +50,22 @@ function UserAction({ user, className, onDelete }) {
     }
 
     return (
-        <div className={className + " py-2 flex justify-around items-start"}>
-            <div className="flex-1 text-start pl-4 pr-2">
-                <Link to={"/profile/" + user.username}>{user.name}</Link>
-                <span className={"ml-4 "+colors[user.role]}>{user.role}</span>
+        <div className={className}>
+            <div className="py-2 flex justify-around items-start">
+                <div className="flex-1 text-start pl-8 pr-2">
+                    <Link to={"/profile/" + user.username}>{user.name}</Link>
+                    <span className={"ml-4 "+colors[user.role]}>{user.role}</span>
+                </div>
+                <select value={status ?? ""} onChange={(e) => setStatus(e.target.value)} className="min-w-32 text-center">
+                    <option value="" hidden>Action</option>
+                    {actions[user.role].map(({ label, value }) => (
+                        <option key={value} value={value}>{label}</option>
+                    ))}
+                </select>
+                <button type="submit" onClick={handleAction} className="pl-4 pr-2"><span>&#10004;</span></button>
+                <button onClick={handleCancel} className="pl-2 pr-8"><span>&#10006;</span></button>
             </div>
-            <select value={status ?? ""} onChange={(e) => setStatus(e.target.value)} className="min-w-32 text-center">
-                <option value="" hidden>Action</option>
-                {actions[user.role].map(({ label, value }) => (
-                    <option key={value} value={value}>{label}</option>
-                ))}
-            </select>
-            <div className="flex flex-col items-end pl-4 pr-2">
-                <button type="submit" onClick={handleAction}><span>&#10004;</span></button>
-                {error && <p className=" text-red-500">{error}</p>}
-            </div>
-            <button onClick={handleCancel} className="pl-2 pr-8"><span>&#10006;</span></button>
+            {error && <p className=" text-red-500 text-start pl-8">{error}</p>}
         </div>
     )
 }
