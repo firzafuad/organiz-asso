@@ -39,6 +39,7 @@ function sanitizeUser(user) {
     id: user._id.toString(),
     username: user.username,
     name: `${user.firstName} ${user.lastName}`,
+    role: user.role,
     email: user.email
   };
 }
@@ -54,11 +55,13 @@ function sanitizeMessage(msg) {
     }
 }
 
-async function getUsers() {
-  const client = await MongoClient.connect(MONGO_URI);
-  const collection = client.db('Forum').collection('Users');
-  const users = await collection.find({}).toArray();
-  await client.close();
+async function getUsers(role) {
+  const query = {}
+  if (role !== "") {
+    query.role = role;
+  }
+  const db = await connectToDB();
+  const users = await db.collection('Users').find(query).toArray();
   return users;
 }
 

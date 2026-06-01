@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useContext } from "react";
-import axios from "axios";
-import { BACK_URI } from "../utils/constants";
+
+import { api, BACK_URI } from "../utils/constants";
 import { UserContext } from "../context/UserContext";
 import ProfileCard from "../components/ProfileCard";
-
-const api = axios.create({
-    baseURL: BACK_URI,
-    withCredentials: true
-});
 
 function ProfilePage() {
     const { username } = useParams();
