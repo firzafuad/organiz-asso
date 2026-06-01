@@ -113,6 +113,7 @@ app.post("/auth/signup", async (req, res) => {
       firstName,
       lastName,
       email,
+      role:"pending",
       password: hashedPassword,
       createdAt: new Date()
     });
@@ -125,6 +126,7 @@ app.post("/auth/signup", async (req, res) => {
         id: result.insertedId.toString(),
         username,
         name: `${firstName} ${lastName}`,
+        role:"pending",
         email
       }
     });
@@ -272,15 +274,19 @@ app.post("/messages", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/users", async (req, res) => {
+app.get("/users", authMiddleware, async (req, res) => {
+  const { role } = req.query;
   try {
-    const users = await getUsers();
-    res.json(users);
+    const users = await getUsers(role);
+    res.json({
+      users: users.map((u) => sanitizeUser(u))
+    });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 app.get("/users/:username", async (req, res) => {
     try {
         const database = await connectToDB();
@@ -302,9 +308,6 @@ app.get("/users/:username", async (req, res) => {
     res.status(500).json({ error: "server error" });
     }
 });
-
-
-
 
 app.delete("/messages/:id", authMiddleware, async (req, res) => {
     try {
@@ -329,15 +332,62 @@ app.delete("/messages/:id", authMiddleware, async (req, res) => {
     }
 });
 
+app.delete("/users/:username", authMiddleware, async (req, res) => {
+  try {
+    const username = req.params.username;
+    const db = await connectToDB();
 
+    const user = await db.collection("Users").findOne({username: username});
 
+    if (!user) {
+      return res.status(404).json({ error: "user not found" });
+    }
 
+    await db.collection("Users").deleteOne({username: username});
 
+    await db.collection("Messages").deleteOne({author: username});
 
+    res.status(200).json({
+      ok: true
+    })
+  } catch (error) {
+    console.log("Delete user error:", error);
+    res.status(500).json({error: "Error user deletion"})
+  }
+});
 
+app.post("/users/:username", authMiddleware, async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const username = req.params.username;
 
+    const user = await db.collection("Users").findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "user not found" });
+    }
+    const userId = user._id.toString();
+    if (userId === req.session.userId) {
+      return res.status(403).json({ error: "Modifying your own role is not allowed" });
+    }
 
+    const { role } = req.query;
+    const validRoles = ["member", "admin"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ error: "invalid role" });
+    }
 
+    const result = await db.collection("Users").updateOne(
+      {username: username},
+      {$set: {role}}
+    );
+
+    res.json({ message: "role updated" });
+
+  } catch (error) {
+    console.log("Update user error:", error);
+    res.status(500).json({error: "Error user update"})
+  }
+});
 
 // Start server
 connectToDB()

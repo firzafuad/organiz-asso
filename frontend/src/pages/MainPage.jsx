@@ -1,27 +1,21 @@
 import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 import Avatar from '../components/Avatar';
 import Message from '../components/Message';
 import Filters from '../components/Filters';
 import SearchBar from '../components/SearchBar';
+import NewMessage from '../components/NewMessage';
+import PendingPage from './PendingPage';
 import logo from '../assets/Logo_SU.png';
 import { UserContext } from '../context/UserContext';
-import { BACK_URI } from '../utils/constants';
-import NewMessage from '../components/NewMessage';
-
-const api = axios.create({
-  baseURL: BACK_URI,
-  withCredentials: true
-});
+import { api, BACK_URI } from '../utils/constants';
 
 function MainPage() {
     const { user, setUser } = useContext(UserContext);
     const [ messages, setMessages ] = useState([])
     const [ error, setError] = useState("");
     const [filters, setFilters] = useState({});
-    const [search, setSearch] = useState("");
 
     useEffect(() => {
         async function fetchMessages() {
@@ -60,29 +54,33 @@ function MainPage() {
         } else {
             return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
                 <Avatar user={user} />
+                <Link to="/admin">
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Admin page</button>
+                </Link>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogout}>Logout</button>
             </div>
         }
     }
 
     const addMessage = (msg) => {
-    if (msg.parentId) {
-        setMessages(messages.map((m) => m.id === msg.parentId ? { ...m, replies: [...(m.replies || []), msg] } : m));
-    } else {
-        setMessages([msg, ...messages]);
+        if (msg.parentId) {
+            setMessages(messages.map((m) => m.id === msg.parentId ? { ...m, replies: [...(m.replies || []), msg] } : m));
+        } else {
+            setMessages([msg, ...messages]);
+        }
     }
-}
 
     const handleFilter = (name, value) => {
-    const newFilters = { ...filters };
-    if (value === "") {
-        delete newFilters[name];
-    } else {
-        newFilters[name] = value;
+        const newFilters = { ...filters };
+        if (value === "") {
+            delete newFilters[name];
+        } else {
+            newFilters[name] = value;
+        }
+        setFilters(newFilters);
     }
-    setFilters(newFilters);
-}
 
+    if (user?.role === "pending") return <PendingPage />
     return (
         <div className="flex font-sans flex-col">
             <header className="flex">
