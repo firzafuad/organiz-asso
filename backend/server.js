@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const { MongoStore } = require("connect-mongo");
 const { ObjectId } = require("mongodb")
 const { connectToDB, getUsers, getUserByName, createUser, sanitizeUser, sanitizeMessage } = require("./utils/database");
-
+const { authMiddleware, adminMiddleware } = require("./middlewares");
 require("dotenv").config();
 const app = express();
 
@@ -16,14 +16,6 @@ const MONGO_URI = process.env.MONGO_URI;
 const DB_NAME = process.env.DB_NAME || "Forum";
 
 
-function authMiddleware(req, res, next) {
-  if (!req.session.userId) {
-    return res.status(401).json({ error: "authentication required" });
-  }
-
-  next();
-}
-
 // Middleware to parse JSON
 app.use(
   cors({
@@ -31,7 +23,6 @@ app.use(
     credentials: true
   })
 );
-
 app.use(express.json());
 
 app.use(
@@ -54,7 +45,9 @@ app.use(
   })
 );
 
-// Basic route
+
+
+
 app.get("/", (req, res) => {
   res.send("I'm Alive!");
 });
@@ -80,6 +73,10 @@ app.get("/auth/me", async (req, res) => {
     res.status(500).json({ error: "server error" });
   }
 });
+
+
+
+
 
 app.post("/auth/signup", async (req, res) => {
   try {
@@ -136,6 +133,15 @@ app.post("/auth/signup", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
 app.post("/auth/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -170,6 +176,11 @@ app.post("/auth/signin", async (req, res) => {
   }
 });
 
+
+
+
+
+
 app.post("/auth/logout", (req, res) => {
   req.session.destroy((error) => {
     if (error) {
@@ -185,6 +196,15 @@ app.post("/auth/logout", (req, res) => {
     res.json({ message: "logout successful" });
   });
 });
+
+
+
+//==== MESSAGE==============================
+
+
+
+
+
 
 app.get("/messages", authMiddleware, async (req, res) => {
   try {
@@ -244,6 +264,9 @@ res.json({
   }
 });
 
+
+
+
 app.post("/messages", authMiddleware, async (req, res) => {
   try {
     const { author, text , parentId} = req.body;
@@ -274,6 +297,36 @@ app.post("/messages", authMiddleware, async (req, res) => {
   }
 });
 
+
+
+
+
+app.delete("/messages/:id", authMiddleware, async (req, res) => {
+    try {
+        const database = await connectToDB();
+
+        const message = await database.collection("Messages").findOne({ _id: new ObjectId(req.params.id) });
+
+        if (!message) {
+            return res.status(404).json({ error: "message not found" });
+        }
+
+        await database.collection("Messages").deleteOne({ _id: new ObjectId(req.params.id) });
+
+        res.json({ message: "message deleted" });
+    } catch (error) {
+        console.log("Delete error:", error);
+        res.status(500).json({ error: "server error" });
+    }
+});
+
+
+
+
+//=================USER===========
+
+
+
 app.get("/users", authMiddleware, async (req, res) => {
   const { role } = req.query;
   try {
@@ -287,7 +340,10 @@ app.get("/users", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/users/:username", async (req, res) => {
+
+
+
+app.get("/users/:username", authMiddleware, async (req, res) => {
     try {
         const database = await connectToDB();
 
@@ -309,30 +365,11 @@ app.get("/users/:username", async (req, res) => {
     }
 });
 
-app.delete("/messages/:id", authMiddleware, async (req, res) => {
-    try {
-        const database = await connectToDB();
 
-        const message = await database.collection("Messages").findOne({ _id: new ObjectId(req.params.id) });
 
-        if (!message) {
-            return res.status(404).json({ error: "message not found" });
-        }
 
-        if (message.userId !== req.session.userId) {
-            return res.status(403).json({ error: "not authorized" });
-        }
 
-        await database.collection("Messages").deleteOne({ _id: new ObjectId(req.params.id) });
-
-        res.json({ message: "message deleted" });
-    } catch (error) {
-        console.log("Delete error:", error);
-        res.status(500).json({ error: "server error" });
-    }
-});
-
-app.delete("/users/:username", authMiddleware, async (req, res) => {
+app.delete("/users/:username", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const username = req.params.username;
     const db = await connectToDB();
@@ -345,7 +382,7 @@ app.delete("/users/:username", authMiddleware, async (req, res) => {
 
     await db.collection("Users").deleteOne({username: username});
 
-    await db.collection("Messages").deleteOne({author: username});
+    await db.collection("Messages").deleteMany({author: username});
 
     res.status(200).json({
       ok: true
@@ -356,7 +393,10 @@ app.delete("/users/:username", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/users/:username", authMiddleware, async (req, res) => {
+
+
+
+app.post("/users/:username", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const db = await connectToDB();
     const username = req.params.username;
@@ -388,6 +428,11 @@ app.post("/users/:username", authMiddleware, async (req, res) => {
     res.status(500).json({error: "Error user update"})
   }
 });
+
+
+
+
+
 
 // Start server
 connectToDB()

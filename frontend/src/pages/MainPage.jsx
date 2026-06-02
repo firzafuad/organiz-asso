@@ -16,6 +16,7 @@ function MainPage() {
     const [ messages, setMessages ] = useState([])
     const [ error, setError] = useState("");
     const [filters, setFilters] = useState({});
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         async function fetchMessages() {
