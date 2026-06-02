@@ -45,7 +45,7 @@ function MainPage() {
 
     const connection = () => {
         if (user === null) {
-            return <div id="connect" className="w-1/4 h-24 flex items-center justify-end gap-4">
+            return <div id="connect" className="w-1/4 h-24 flex flex-col items-center justify-end gap-4 mt-8">
                 <Link to="/login">
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Connexion</button>
                 </Link>
