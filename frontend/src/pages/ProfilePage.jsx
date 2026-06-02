@@ -11,7 +11,6 @@ function ProfilePage() {
     const { user } = useContext(UserContext);
     const [profileData, setProfileData] = useState(null);
     const [error, setError] = useState("");
-    const [isEditing, setIsEditing] = useState(false);
 
     
     useEffect(() => {
@@ -51,6 +50,7 @@ function ProfilePage() {
             user={profileData.user}
             messages={profileData.messages}
             onDelete={handleDelete}
+            currentUser={user}
         />
     </div>
 );
