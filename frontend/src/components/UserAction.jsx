@@ -22,7 +22,7 @@ function UserAction({ user, className, onDelete, onUpdate }) {
         if (status === user.role) return ;
         if (status === "delete") {
             try {
-                api.delete(`/users/${user.username}`);
+                await api.delete(`/users/${user.username}`);
                 onDelete(user);
             } catch (error) {
                 setError(error.response?.data?.error);
@@ -35,7 +35,7 @@ function UserAction({ user, className, onDelete, onUpdate }) {
                 await api.post(`/users/${user.username}`, null, {
                     params: {role: status}
                 })
-                onUpdate(user);
+                onUpdate({ ...user, role: status });
             } catch (error) {
                 setError(error.response?.data?.error);
                 setTimeout(() => {

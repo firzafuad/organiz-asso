@@ -309,24 +309,39 @@ app.post("/messages", authMiddleware, async (req, res) => {
 
 
 
-
 app.delete("/messages/:id", authMiddleware, async (req, res) => {
-    try {
-        const database = await connectToDB();
+  try {
+    const database = await connectToDB();
 
-        const message = await database.collection("Messages").findOne({ _id: new ObjectId(req.params.id) });
+    const message = await database.collection("Messages").findOne({
+      _id: new ObjectId(req.params.id)
+    });
 
-        if (!message) {
-            return res.status(404).json({ error: "message not found" });
-        }
-
-        await database.collection("Messages").deleteOne({ _id: new ObjectId(req.params.id) });
-
-        res.json({ message: "message deleted" });
-    } catch (error) {
-        console.log("Delete error:", error);
-        res.status(500).json({ error: "server error" });
+    if (!message) {
+      return res.status(404).json({ error: "message not found" });
     }
+
+    const currentUser = await database.collection("Users").findOne({
+      _id: new ObjectId(req.session.userId)
+    });
+
+    if (
+      message.userId !== req.session.userId &&
+      currentUser.role !== "admin"
+    ) {
+      return res.status(403).json({ error: "not authorized" });
+    }
+
+    await database.collection("Messages").deleteOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    res.json({ message: "message deleted" });
+
+  } catch (error) {
+    console.log("Delete error:", error);
+    res.status(500).json({ error: "server error" });
+  }
 });
 
 
