@@ -3,7 +3,7 @@ const { MongoClient } = require("mongodb");
 
 dotenv.config();
 const MONGO_URI = process.env.MONGO_URI;
-const DB_NAME = process.env.DB_NAME || "Forum";
+const DB_NAME = process.env.DB_NAME || "AFF_CRDA";
 if (!MONGO_URI) {
   throw new Error("MONGO_URI is required");
 }
