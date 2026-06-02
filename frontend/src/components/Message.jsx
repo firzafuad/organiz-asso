@@ -34,7 +34,7 @@ function Message(props) {
 
         <button className="message-button" onClick={() => setShowReply(!showReply)}>{showReply ? "Annuler" : "Répondre"}</button>
 
-        {showReply && <NewMessage parentId={props.id} onSubmit={(msg) => { props.onReply(msg); setShowReply(false); }} />}
+        {showReply && <NewMessage parentId={props.id} category={props.category} onSubmit={(msg) => { props.onReply(msg); setShowReply(false); }} />}
         {props.replies && props.replies.length > 0 && (<ResponseList responses={props.replies} />)}
     </div>
     );

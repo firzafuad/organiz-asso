@@ -1,14 +1,9 @@
 import { useContext } from "react";
 import { useState } from "react";
-import axios from 'axios';
-import { UserContext } from "../context/UserContext";
-import { BACK_URI } from "../utils/constants";
-import "../styles/NewMessage.css";
 
-const api = axios.create({
-    baseURL: BACK_URI,
-    withCredentials: true
-});
+import { UserContext } from "../context/UserContext";
+import { api, BACK_URI } from "../utils/constants";
+import "../styles/NewMessage.css";
 
 function NewMessage(props) {
     const [text, setText] = useState("");
@@ -21,6 +16,7 @@ function NewMessage(props) {
             const response = await api.post("/messages", {
                 author: user.username,
                 text,
+                category: props.category,
                 parentId: props.parentId || null
             });
             props.onSubmit(response.data.message);

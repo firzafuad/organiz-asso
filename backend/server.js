@@ -215,49 +215,57 @@ app.get("/messages", authMiddleware, async (req, res) => {
     let query = {};
 
     if (dateDebut && dateDebut !== "" && dateFin && dateFin !== "") {
-    query.createdAt = { $gte: new Date(dateDebut), $lte: new Date(dateFin) };
-    } else if (dateDebut && dateDebut !== "") {
-        query.createdAt = { $gte: new Date(dateDebut) };
-    } else if (dateFin && dateFin !== "") {
-    query.createdAt = { $lte: new Date(dateFin) };
-}
-const { search } = req.query;
-
-if (search && search !== "") {
-    query.$or = [
-        { text: { $regex: search, $options: "i" } },
-        { author: { $regex: search, $options: "i" } }
-    ];
-}
-    const allMessages = await database
-  .collection("Messages")
-  .find(query)
-  .sort({ createdAt: -1 })
-  .toArray();
-
-const messages = [];
-const replies = [];
-
-for (let i = 0; i < allMessages.length; i++) {
-    if (allMessages[i].parentId) {
-        replies.push(allMessages[i]);
-    } else {
-        messages.push(allMessages[i]);
+      query.createdAt = { $gte: new Date(dateDebut), $lte: new Date(dateFin) };
+      } else if (dateDebut && dateDebut !== "") {
+          query.createdAt = { $gte: new Date(dateDebut) };
+      } else if (dateFin && dateFin !== "") {
+        query.createdAt = { $lte: new Date(dateFin) };
     }
-}
+    const { search } = req.query;
 
-for (let i = 0; i < messages.length; i++) {
-    messages[i].replies = [];
-    for (let j = 0; j < replies.length; j++) {
-        if (replies[j].parentId === messages[i]._id.toString()) {
-            messages[i].replies.push(replies[j]);
+    if (search && search !== "") {
+        query.$or = [
+            { text: { $regex: search, $options: "i" } },
+            { author: { $regex: search, $options: "i" } }
+        ];
+    }
+
+    const { category } = req.query;
+    if (category && category !== "") {
+      query.category = { $eq: category};
+    } else {
+      query.category = { $eq: "public"};
+    }
+    
+    const allMessages = await database
+      .collection("Messages")
+      .find(query)
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    const messages = [];
+    const replies = [];
+
+    for (let i = 0; i < allMessages.length; i++) {
+        if (allMessages[i].parentId) {
+            replies.push(allMessages[i]);
+        } else {
+            messages.push(allMessages[i]);
         }
     }
-}
 
-res.json({
-    messages: messages.map((msg) => sanitizeMessage(msg))
-});
+    for (let i = 0; i < messages.length; i++) {
+        messages[i].replies = [];
+        for (let j = 0; j < replies.length; j++) {
+            if (replies[j].parentId === messages[i]._id.toString()) {
+                messages[i].replies.push(replies[j]);
+            }
+        }
+    }
+
+    res.json({
+        messages: messages.map((msg) => sanitizeMessage(msg))
+    });
   } catch (error) {
     console.log("Messages error:", error);
     res.status(500).json({ error: "server error" });
@@ -269,7 +277,7 @@ res.json({
 
 app.post("/messages", authMiddleware, async (req, res) => {
   try {
-    const { author, text , parentId} = req.body;
+    const { author, text, category, parentId} = req.body;
 
     if (!text || text.trim() === "") {
       return res.status(400).json({ error: "text is required" });
@@ -280,6 +288,7 @@ app.post("/messages", authMiddleware, async (req, res) => {
     const result = await database.collection("Messages").insertOne({
       text: text.trim(),
       author: author,
+      category,
       userId: req.session.userId,
       parentId: parentId || null,
       createdAt: new Date()

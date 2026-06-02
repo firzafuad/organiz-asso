@@ -50,6 +50,7 @@ function sanitizeMessage(msg) {
         author: msg.author,
         text: msg.text,
         date: msg.createdAt,
+        category: msg.category,
         parentId: msg.parentId || null,
         replies: msg.replies ? msg.replies.map((rep) => sanitizeMessage(rep)) : []
     }
