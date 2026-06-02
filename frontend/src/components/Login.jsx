@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import axios from "axios";
-import { BACK_URI } from '../utils/constants';
+
+import { api, BACK_URI } from '../utils/constants';
 
 function Login (props) {
 	const [email, setEmail] = useState("");
@@ -8,11 +8,6 @@ function Login (props) {
 	
 	const getEmail = (evt) => {setEmail(evt.target.value)}
 	const getPassword = (evt) => {setPassword(evt.target.value)}
-
-	const api = axios.create({
-		baseURL: BACK_URI,
-		withCredentials: true
-	});
 
 	async function submissionHandler(evt) {
 		evt.preventDefault();

@@ -11,10 +11,9 @@ function ProfilePage() {
     const { user } = useContext(UserContext);
     const [profileData, setProfileData] = useState(null);
     const [error, setError] = useState("");
+    const [isEditing, setIsEditing] = useState(false);
 
     
-    const isOwner = user && user.username === username;
-
     useEffect(() => {
         async function fetchProfile() {
             try {
@@ -35,12 +34,26 @@ function ProfilePage() {
     if (!profileData) {
         return <p>Chargement</p>;
     }
-
+        async function handleDelete(id) {
+        try {
+            await api.delete("/messages/" + id);
+            setProfileData({
+                ...profileData,
+                messages: profileData.messages.filter((msg) => msg.id !== id)
+            });
+        } catch (error) {
+            console.log("Delete error:", error);
+        }
+    }
     return (
-        <div>
-            <ProfileCard user={profileData.user} isOwner={isOwner} />
-        </div>
-    );
+    <div>
+        <ProfileCard 
+            user={profileData.user}
+            messages={profileData.messages}
+            onDelete={handleDelete}
+        />
+    </div>
+);
 }
 
 export default ProfilePage;

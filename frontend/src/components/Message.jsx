@@ -2,6 +2,7 @@ import { useState } from "react";
 import NewMessage from "./NewMessage";
 import ResponseList from "./ResponseList";
 import { Link } from "react-router-dom";
+import "../styles/Message.css";
 
 function Message(props) {
     const [showReply, setShowReply] = useState(false);
@@ -24,16 +25,16 @@ function Message(props) {
     const date = formatDate(props.date);
 
     return( 
-    <div>
-        <p>
-            <Link to={"/profile/" + props.author}><span>{props.author}</span></Link> - <time className="opacity-50">{date}</time>
+    <div className="message-card">
+        <p className="message-author">
+            <Link to={"/profile/" + props.author}><span className="author-name">{props.author}</span></Link> - <time className="opacity-50">{date}</time>
         </p>
 
-        <p>{props.text}</p>
+        <p className="message-content">{props.text}</p>
 
-        <button onClick={() => setShowReply(!showReply)}>{showReply ? "Annuler" : "Répondre"}</button>
+        <button className="message-button" onClick={() => setShowReply(!showReply)}>{showReply ? "Annuler" : "Répondre"}</button>
 
-        {showReply && <NewMessage parentId={props.id} onSubmit={(msg) => { props.onReply(msg); setShowReply(false); }} />}
+        {showReply && <NewMessage parentId={props.id} category={props.category} onSubmit={(msg) => { props.onReply(msg); setShowReply(false); }} />}
         {props.replies && props.replies.length > 0 && (<ResponseList responses={props.replies} />)}
     </div>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { BACK_URI } from '../utils/constants';
+
+import { api, BACK_URI } from '../utils/constants';
 
 function Signup (props) {
   
@@ -12,11 +12,6 @@ function Signup (props) {
   const [passOK, setPassOK] = useState("");
 
   const [error, setError] = useState("")
-  
-  const api = axios.create({
-		baseURL: BACK_URI,
-		withCredentials: true
-	});
 
 	async function submissionHandler(evt) {
 		evt.preventDefault();

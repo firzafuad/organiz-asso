@@ -1,0 +1,83 @@
+/* =========================
+   CARD PROFIL PRINCIPALE
+========================= */
+
+.profile-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  padding: 15px;
+  margin-top: 15px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =========================
+   INFOS USER
+========================= */
+
+.profile-card h2 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.profile-card p {
+  margin: 3px 0;
+  color: #555;
+}
+
+/* séparation titre messages */
+.profile-card h3 {
+  margin-top: 10px;
+  color: #2c3e50;
+}
+
+/* =========================
+   LISTE MESSAGES
+========================= */
+
+.profile-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* chaque message */
+.profile-card li {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* texte message */
+.profile-card li p {
+  margin: 0;
+  color: #444;
+}
+
+/* bouton delete */
+.profile-card button {
+  margin-top: 8px;
+
+  padding: 5px 8px;
+  border: none;
+  border-radius: 5px;
+
+  background: #e74c3c;
+  color: white;
+
+  cursor: pointer;
+}
+
+.profile-card button:hover {
+  background: #c0392b;
+}
