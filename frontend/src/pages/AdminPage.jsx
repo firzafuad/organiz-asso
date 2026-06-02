@@ -37,9 +37,9 @@ function AdminPage() {
         ));
     }
 
-    const onUpdate = (user) => {
+    const onUpdate = (user, status) => {
         setUserList(userList.map(
-            (u) => u.username === user.username ? { ...u, role:user.role } : u
+            (u) => u.username === user.username ? { ...u, role:status } : u
         ));
     }
 

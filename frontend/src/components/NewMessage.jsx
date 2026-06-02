@@ -20,14 +20,15 @@ function NewMessage(props) {
                 parentId: props.parentId || null
             });
             props.onSubmit(response.data.message);
-        } catch (error) {
+            setText("");
+        } catch (error) {;
             setError(error.response?.data?.error);
         }
     }
 
     return <form className="grid">
         <label method='POST' htmlFor="text_new_comment" >Nouveau message:</label>
-        <textarea id="text_new_comment" rows="4" className="h-20" onChange={(evt) => {setText(evt.target.value);}}></textarea>
+        <textarea value={text} id="text_new_comment" rows="4" className="h-20" onChange={(evt) => {setText(evt.target.value);}}></textarea>
         <button type='submit' className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded' onClick={submitHandler}>Send</button>
         {error && (<p style={{ color: 'red' }}>{error}</p>)}
     </form>
