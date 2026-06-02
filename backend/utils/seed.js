@@ -129,7 +129,7 @@ async function seed() {
 
   try {
     await client.connect();
-    const db = client.db(process.env.DB_NAME || "Forum");
+    const db = client.db(process.env.DB_NAME || "AFF_CRDA");
 
     // 1. Clear collections
     await db.collection("Users").deleteMany({});
