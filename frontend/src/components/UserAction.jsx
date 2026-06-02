@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom";
 import { api } from "../utils/constants";
 
 function UserAction({ user, className, onDelete, onUpdate }) {
     const [ status, setStatus ] = useState(user.role);
-    const [ error, setError ] = useState("")
+    const [ error, setError ] = useState("");
 
     const actions = {
         admin: [{ label: "Rétrograder", value: "member" }],
@@ -35,7 +35,7 @@ function UserAction({ user, className, onDelete, onUpdate }) {
                 await api.post(`/users/${user.username}`, null, {
                     params: {role: status}
                 })
-                onUpdate(user);
+                onUpdate(user, status);
             } catch (error) {
                 setError(error.response?.data?.error);
                 setTimeout(() => {
