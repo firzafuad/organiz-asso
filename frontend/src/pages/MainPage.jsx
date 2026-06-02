@@ -85,14 +85,23 @@ function MainPage() {
                 <div className='flex flex-col *:py-2'>
                     <h3 className='text-blue-100'>Admin Tools</h3>
                     <div>
-                        <label htmlFor="cat" className="px-8">Catégorie</label>
-                        <select id="cat" value={category ?? "public"} onChange={(e) => setCategory(e.target.value)} className='rounded-md p-2 text-white bg-gray-950'>
-                            <option value="public">Forum ouvert</option>
-                            <option value="private">Forum fermé</option>
-                        </select>
+                        <label htmlFor="cat" className="px-8 text-white">Catégorie</label>
+                        <div className='flex flex-col justify-self-center bg-gray-700 rounded-md w-9/12'>
+                            <button onClick={() => setCategory("public")} className={ "py-1 transition-all duration-300 " +
+                                (category==="public" ? "bg-blue-500 rounded-md rounded-b-none text-white font-bold shadow-lg border-l-4 border-blue-500"
+                                : "border-l-4 border-transparent text-gray-400 hover:text-white")} >
+                                    Forum Ouvert
+                            </button>
+                            <button onClick={() => setCategory("private")} className={"py-1 transition-all duration-300 " +
+                                (category==="private" ? "bg-red-500 rounded-md rounded-t-none text-white font-bold shadow-lg border-l-4 border-red-500"
+                                : "border-l-4 border-transparent text-gray-400 hover:text-white")} >
+                                    Forum Fermé
+                            </button>
+                        </div>
+                            
                     </div>
                     <Link to="/admin">
-                        <button className="bg-mist-900 hover:bg-mist-500 text-white font-bold py-2 px-4 rounded">Admin page</button>
+                        <button className="bg-gray-700 hover:bg-mist-500 text-white font-bold py-2 px-4 rounded">Admin page</button>
                     </Link>
                 </div>
             )
