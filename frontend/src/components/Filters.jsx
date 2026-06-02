@@ -12,7 +12,7 @@ function Filters(props) {
 
     const handleFin = (evt) => {
         setFin(evt.target.value);
-        props.onFilter("dateDebut", evt.target.value);
+        props.onFilter("dateFin", evt.target.value);
     }
 
     return <div id="filtre_div">
